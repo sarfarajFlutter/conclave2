@@ -44,8 +44,18 @@ class ApiServices {
         // body: json.encode(body),
         body: json.encode(body),
         headers: headers);
+
+    print(response.body);    
     var result = json.decode(response.body);
     print(result["message"] + "------>");
+
+    print("qwerty");
+
+    print(result["message"].contains("succ"));
+
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text("Registration successful")),
+    //   );
 
     return result["message"];
 

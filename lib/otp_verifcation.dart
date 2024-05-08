@@ -204,17 +204,17 @@ class _OtpVericationScreenState extends State<OtpVericationScreen> {
                             loading = false;
                           });
 
-                          // Navigator.push(
-                          //     context,
-                          //     PageTransition(
-                          //         type: PageTransitionType.rightToLeft,
-                          //         child: const GreetingScreen()));
+                          Navigator.push(
+                              context,
+                              PageTransition(
+                                  type: PageTransitionType.rightToLeft,
+                                  child: const GreetingScreen()));
 
-                            Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: const HomePage()));
+                            // Navigator.push(
+                            // context,
+                            // PageTransition(
+                            //     type: PageTransitionType.rightToLeft,
+                            //     child: const HomePage()));
                         } catch (e) {
                           setState(() {
                             loading = false;

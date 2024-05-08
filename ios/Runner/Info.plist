@@ -32,6 +32,10 @@
 	<string>your usage description here</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location.</string>
 	<key>NSLocationUsageDescription</key>
 	<string>This app needs access to location.</string>
 	<key>UISupportedInterfaceOrientations</key>

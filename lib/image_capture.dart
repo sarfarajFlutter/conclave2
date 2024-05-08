@@ -85,7 +85,7 @@ class _ImageCaptureState extends State<ImageCapture> {
 
   saveImages() async {
     var str = await ApiServices().saveImages(imgs);
-
+    print(str.contains("succ"));
     if (str == "Registration successful") {
       print("doneeee");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -130,7 +130,7 @@ class _ImageCaptureState extends State<ImageCapture> {
     print("---------------->$i");
 
     final cameras = await availableCameras();
-    camCtrl = CameraController(cameras[1], ResolutionPreset.max);
+    camCtrl = CameraController(cameras[1], ResolutionPreset.low);
     camCtrl!.initialize().then((_) {
       if (!mounted) {
         return;
