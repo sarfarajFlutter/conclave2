@@ -7,7 +7,6 @@ import 'package:conclave/custom/spacers.dart';
 import 'package:conclave/manage_quizes.dart';
 import 'package:conclave/models/feature_model.dart';
 import 'package:conclave/quiz_home.dart';
-import 'package:conclave/quiz_main/QuizHomePageWidget.dart';
 import 'package:conclave/services/storage_services.dart';
 import 'package:conclave/web_view_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,7 +55,7 @@ class _HomePageState extends State<HomePage> {
     final pf = await LocalStorageService().loadData('Pfnum') ?? '';
 
     final docRef =
-        FirebaseFirestore.instance.collection('conclaveData').doc('data');
+    FirebaseFirestore.instance.collection('conclaveData').doc('data');
 
     try {
       print("rannn34");
@@ -115,7 +114,7 @@ class _HomePageState extends State<HomePage> {
     bool serviceEnabled = await locationService.isLocationServiceEnabled();
 
     final docRef =
-        FirebaseFirestore.instance.collection('conclaveData').doc('data');
+    FirebaseFirestore.instance.collection('conclaveData').doc('data');
     final doc = await docRef.get();
     final data = doc.data();
 
@@ -136,17 +135,17 @@ class _HomePageState extends State<HomePage> {
       try {
         final position = await locationService.getCurrentPosition(
             locationSettings:
-                const LocationSettings(accuracy: LocationAccuracy.high));
+            const LocationSettings(accuracy: LocationAccuracy.high));
         setState(() {
           print("${position.latitude},${position.longitude}");
           currentLatitude = position.latitude;
           currentLongitude = position.longitude;
           print(int.parse(data!['proxRadius']));
           isWithinRadius = Geolocator.distanceBetween(
-                  currentLatitude!,
-                  currentLongitude!,
-                  double.parse(data!['coords'][0]),
-                  double.parse(data!['coords'][1])) <=
+              currentLatitude!,
+              currentLongitude!,
+              double.parse(data!['coords'][0]),
+              double.parse(data!['coords'][1])) <=
               int.parse(data['proxRadius']);
           print(isWithinRadius);
           if (!isWithinRadius) {
@@ -225,7 +224,7 @@ class _HomePageState extends State<HomePage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide:
-                        const BorderSide(color: tertiaryColor, width: 1),
+                    const BorderSide(color: tertiaryColor, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -261,7 +260,7 @@ class _HomePageState extends State<HomePage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide:
-                        const BorderSide(color: tertiaryColor, width: 1),
+                    const BorderSide(color: tertiaryColor, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -297,7 +296,7 @@ class _HomePageState extends State<HomePage> {
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide:
-                        const BorderSide(color: tertiaryColor, width: 1),
+                    const BorderSide(color: tertiaryColor, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -386,9 +385,9 @@ class _HomePageState extends State<HomePage> {
 
       if(quzStatus=='active')
       {
-    setState(() {
+        setState(() {
           newQuizes.add(documents[i].id) ;
-    });
+        });
         print("rrrrrrrrrrrrr");
 
         print("printActive");
@@ -429,7 +428,7 @@ class _HomePageState extends State<HomePage> {
 
   getTitles() async {
     final docRef =
-        FirebaseFirestore.instance.collection('conclaveData').doc('Features');
+    FirebaseFirestore.instance.collection('conclaveData').doc('Features');
     final doc = await docRef.get();
     if (!doc.exists) {
       return []; // Document doesn't exist, return empty list
@@ -459,7 +458,7 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> addViewToFeatures() async {
     final docRef =
-        FirebaseFirestore.instance.collection('conclaveData').doc('Features');
+    FirebaseFirestore.instance.collection('conclaveData').doc('Features');
     final title = titleController.text;
     final imageUrl = imageUrlController.text;
     final pageUrl = pageUrlController.text;
@@ -654,7 +653,6 @@ class _HomePageState extends State<HomePage> {
                         ),
                         IconButton(
                             onPressed: () {
-                              // getEvent();
                               getDocuments();
                             },
                             icon: const Icon(
@@ -689,11 +687,145 @@ class _HomePageState extends State<HomePage> {
                               width: 40.0,
                               height: 2.0,
                               margin:
-                                  const EdgeInsets.only(bottom: 25.0, top: 25),
+                              const EdgeInsets.only(bottom: 25.0, top: 25),
                             ),
                           ],
                         ),
                         VerticalSpacer(height: 20),
+                        CarouselSlider(
+                          carouselController: buttonCarouselController,
+                          options: CarouselOptions(
+                            height: 200,
+                            aspectRatio: 16 / 9,
+                            viewportFraction: 0.9,
+                            initialPage: 0,
+                            enableInfiniteScroll: true,
+                            reverse: false,
+                            autoPlay: true,
+                            autoPlayInterval: const Duration(seconds: 3),
+                            autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                            autoPlayCurve: Curves.fastOutSlowIn,
+                            enlargeCenterPage: true,
+                            enlargeFactor: 0.1,
+                            scrollDirection: Axis.horizontal,
+                          ),
+                          items: List.generate(
+                            questions.length,
+                                (index) => ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage('assets/greeting_bg.jpeg'),
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
+                                      child:
+                                      Text(
+                                        questions[index].eventName!,
+                                        style: TextStyle(fontSize: 12.0, color: Colors.white),
+                                      ),
+                                      // ),
+                                    ),
+                                    Divider(height: 2.0),
+                                    Padding(
+                                      padding:  EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
+                                      child: Text(
+                                        questions[index].description!,
+                                        style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Container(
+                                      color: Colors.white.withOpacity(0.20),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'Time: ',
+                                                  style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                                ),
+                                                Text(
+                                                  questions[index].dateTime!,
+                                                  style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  'Location: ',
+                                                  style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                                ),
+                                                Text(
+                                                  questions[index].location!,
+                                                  style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 8.0, left: 8.0),
+                                              child: Text(
+                                                questions[index].speakerDescription!,
+                                                style: TextStyle(fontSize: 8.0, color: Colors.white),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.only(top: 8.0, left: 8.0),
+                                              child: Text(
+                                                questions[index].speakername!,
+                                                style: TextStyle(
+                                                    fontSize: 16.0,
+                                                    color: Colors.amber,
+                                                    fontWeight: FontWeight.w600),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Image.network(
+                                              questions[index].image!, // Set your image path here
+                                              width: 60, // Adjust the width as needed
+                                              height: 60, // Adjust the height as needed
+                                              fit: BoxFit.cover, // Adjust the fit as needed
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        ///
                         // const SizedBox(
                         //   height: 180,
                         // ),
@@ -726,486 +858,184 @@ class _HomePageState extends State<HomePage> {
                         //   ),
                         // ),
 
-                        CarouselSlider(
-                          carouselController: buttonCarouselController,
-                          options: CarouselOptions(
-                            height: 200,
-                            aspectRatio: 16 / 9,
-                            viewportFraction: 0.9,
-                            initialPage: 0,
-                            enableInfiniteScroll: true,
-                            reverse: false,
-                            autoPlay: true,
-                            autoPlayInterval: const Duration(seconds: 3),
-                            autoPlayAnimationDuration:
-                                const Duration(milliseconds: 800),
-                            autoPlayCurve: Curves.fastOutSlowIn,
-                            enlargeCenterPage: true,
-                            enlargeFactor: 0.1,
-                            // onPageChanged: (index, reason) {
-                            //   setState(() {
-                            //     currentIndex = index;
-                            //     print(currentIndex);
-                            //   });
-                            // },
-                            scrollDirection: Axis.horizontal,
-                          ),
-                          items: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image:
-                                        AssetImage('assets/greeting_bg.jpeg'),
-                                    // width: mq.size.width,
-                                    // height: 200,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                child:
-                                    // Column(
-
-                                    // children: [
-                                    Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        questions[0].,
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    const Divider(height: 2.0),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Get ready to boost morale and strengthen bonds! Join us for an inspiring motivation and team building session that will ignite enthusiasm and foster collaboration.',
-                                        style: TextStyle(
-                                            fontSize: 8.0, color: Colors.white),
-                                      ),
-                                    ),
-                                    // Divider(height: 2.0),
-                                    Container(
-                                      color: Colors.white.withOpacity(0.20),
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Time: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  '9:30 AM',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Location: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  'Main Hall, KTDC Waterscapes',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Speaker: Author, RJ, Actor and Speaker:',
-                                                style: TextStyle(
-                                                    fontSize: 8.0,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Joseph Annamkutty Jose',
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Colors.amber,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Container(
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Image.asset(
-                                              'assets/man.png', // Set your image path here
-                                              width:
-                                                  60, // Adjust the width as needed
-                                              height:
-                                                  60, // Adjust the height as needed
-                                              fit: BoxFit
-                                                  .cover, // Adjust the fit as needed
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                // ],
-                                // ),
-                              ),
-                              // child: Image.asset(
-                              //   'assets/greeting_bg.png',
-                              //   width: mq.size.width,
-                              //   height: 200,
-                              //   fit: BoxFit.fill,
-                              // ),
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image:
-                                        AssetImage('assets/greeting_bg.jpeg'),
-                                    // width: mq.size.width,
-                                    // height: 200,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                child:
-                                    // Column(
-
-                                    // children: [
-                                    Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Session2 | Motivation & Team Building',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    const Divider(height: 2.0),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Get ready to boost morale and strengthen bonds! Join us for an inspiring motivation and team building session that will ignite enthusiasm and foster collaboration.',
-                                        style: TextStyle(
-                                            fontSize: 8.0, color: Colors.white),
-                                      ),
-                                    ),
-                                    // Divider(height: 2.0),
-                                    Container(
-                                      color: Colors.white.withOpacity(0.20),
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Time: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  '9:30 AM',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Location: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  'Main Hall, KTDC Waterscapes',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Speaker: Author, RJ, Actor and Speaker:',
-                                                style: TextStyle(
-                                                    fontSize: 8.0,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Joseph Annamkutty Jose',
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Colors.amber,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                            'assets/man.png', // Set your image path here
-                                            width:
-                                                60, // Adjust the width as needed
-                                            height:
-                                                60, // Adjust the height as needed
-                                            fit: BoxFit
-                                                .cover, // Adjust the fit as needed
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                // ],
-                                // ),
-                              ),
-                              // child: Image.asset(
-                              //   'assets/greeting_bg.png',
-                              //   width: mq.size.width,
-                              //   height: 200,
-                              //   fit: BoxFit.fill,
-                              // ),
-                            ),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  image: DecorationImage(
-                                    image:
-                                        AssetImage('assets/greeting_bg.jpeg'),
-                                    // width: mq.size.width,
-                                    // height: 200,
-                                    fit: BoxFit.fill,
-                                  ),
-                                ),
-                                child:
-                                    // Column(
-
-                                    // children: [
-                                    Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Session3 | Motivation & Team Building',
-                                        style: TextStyle(
-                                            fontSize: 12.0,
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                    const Divider(height: 2.0),
-                                    const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        'Get ready to boost morale and strengthen bonds! Join us for an inspiring motivation and team building session that will ignite enthusiasm and foster collaboration.',
-                                        style: TextStyle(
-                                            fontSize: 8.0, color: Colors.white),
-                                      ),
-                                    ),
-                                    // Divider(height: 2.0),
-                                    Container(
-                                      color: Colors.white.withOpacity(0.20),
-                                      child: const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Time: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  '9:30 AM',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Text(
-                                                  'Location: ',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                                Text(
-                                                  'Main Hall, KTDC Waterscapes',
-                                                  style: TextStyle(
-                                                      fontSize: 8.0,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Speaker: Author, RJ, Actor and Speaker:',
-                                                style: TextStyle(
-                                                    fontSize: 8.0,
-                                                    color: Colors.white),
-                                              ),
-                                            ),
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 8.0, left: 8.0),
-                                              child: Text(
-                                                'Joseph Annamkutty Jose',
-                                                style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Colors.amber,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Image.asset(
-                                            'assets/man.png', // Set your image path here
-                                            width:
-                                                60, // Adjust the width as needed
-                                            height:
-                                                60, // Adjust the height as needed
-                                            fit: BoxFit
-                                                .cover, // Adjust the fit as needed
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                // ],
-                                // ),
-                              ),
-                              // child: Image.asset(
-                              //   'assets/greeting_bg.png',
-                              //   width: mq.size.width,
-                              //   height: 200,
-                              //   fit: BoxFit.fill,
-                              // ),
-                            ),
-
-                            // ClipRRect(
-                            //   borderRadius: BorderRadius.circular(20),
-                            //   child: Image.asset(
-                            //     'assets/greeting_bg.png',
-                            //     width: mq.size.width,
-                            //     height: 200,
-                            //     fit: BoxFit.fill,
-                            //   ),
-                            // ),
-                            // ClipRRect(
-                            //   borderRadius: BorderRadius.circular(20),
-                            //   child: Image.asset(
-                            //     'assets/greeting_bg.png',
-                            //     width: mq.size.width,
-                            //     height: 200,
-                            //     fit: BoxFit.fill,
-                            //   ),
-                            // ),
-                          ],
-                        ),
+                        // CarouselSlider(
+                        //   carouselController: buttonCarouselController,
+                        //   options: CarouselOptions(
+                        //     height: 200,
+                        //     aspectRatio: 16 / 9,
+                        //     viewportFraction: 0.9,
+                        //     initialPage: 0,
+                        //     enableInfiniteScroll: true,
+                        //     reverse: false,
+                        //     autoPlay: true,
+                        //     autoPlayInterval: const Duration(seconds: 3),
+                        //     autoPlayAnimationDuration:
+                        //         const Duration(milliseconds: 800),
+                        //     autoPlayCurve: Curves.fastOutSlowIn,
+                        //     enlargeCenterPage: true,
+                        //     enlargeFactor: 0.1,
+                        //
+                        //     // onPageChanged: (index, reason) {
+                        //     //   setState(() {
+                        //     //     currentIndex = index;
+                        //     //     print(currentIndex);
+                        //     //   });
+                        //     // },
+                        //     scrollDirection: Axis.horizontal,
+                        //   ),
+                        //   items: [
+                        //     ClipRRect(
+                        //       borderRadius: BorderRadius.circular(20),
+                        //       child: Container(
+                        //         decoration: const BoxDecoration(
+                        //           image: DecorationImage(
+                        //             image:
+                        //                 AssetImage('assets/greeting_bg.jpeg'),
+                        //             // width: mq.size.width,
+                        //             // height: 200,
+                        //             fit: BoxFit.fill,
+                        //           ),
+                        //         ),
+                        //         child:
+                        //             // Column(
+                        //
+                        //             // children: [
+                        //             Column(
+                        //           crossAxisAlignment: CrossAxisAlignment.start,
+                        //           children: [
+                        //              Padding(
+                        //               padding: EdgeInsets.all(8.0),
+                        //               child: Text(
+                        //
+                        //                   questions[0].eventName!,
+                        //                 // questions[0].,
+                        //                 style: TextStyle(
+                        //                     fontSize: 12.0,
+                        //                     color: Colors.white),
+                        //               ),
+                        //             ),
+                        //              Divider(height: 2.0),
+                        //              Padding(
+                        //               padding: EdgeInsets.all(8.0),
+                        //               child: Text(
+                        //                 questions[0].description!,
+                        //                 // 'Get ready to boost morale and strengthen bonds! Join us for an inspiring motivation and team building session that will ignite enthusiasm and foster collaboration.',
+                        //                 style: TextStyle(
+                        //                     fontSize: 8.0, color: Colors.white),
+                        //               ),
+                        //             ),
+                        //             // Divider(height: 2.0),
+                        //             Container(
+                        //               color: Colors.white.withOpacity(0.20),
+                        //               child:  Row(
+                        //                 mainAxisAlignment:
+                        //                     MainAxisAlignment.spaceBetween,
+                        //                 children: [
+                        //                   Padding(
+                        //                     padding: EdgeInsets.all(8.0),
+                        //                     child: Row(
+                        //                       children: [
+                        //                         Text(
+                        //                           'Time: ',
+                        //                           style: TextStyle(
+                        //                               fontSize: 8.0,
+                        //                               color: Colors.white),
+                        //                         ),
+                        //                         Text(
+                        //                             questions[0].dateTime!,
+                        //                           style: TextStyle(
+                        //                               fontSize: 8.0,
+                        //                               color: Colors.white),
+                        //                         ),
+                        //                       ],
+                        //                     ),
+                        //                   ),
+                        //                   Padding(
+                        //                     padding: EdgeInsets.all(8.0),
+                        //                     child: Row(
+                        //                       children: [
+                        //                         Text(
+                        //                           'Location: ',
+                        //                           style: TextStyle(
+                        //                               fontSize: 8.0,
+                        //                               color: Colors.white),
+                        //                         ),
+                        //                         Text(
+                        //                             questions[0].location!,
+                        //                           style: TextStyle(
+                        //                               fontSize: 8.0,
+                        //                               color: Colors.white),
+                        //                         ),
+                        //                       ],
+                        //                     ),
+                        //                   ),
+                        //                 ],
+                        //               ),
+                        //             ),
+                        //
+                        //             Row(
+                        //               mainAxisAlignment:
+                        //                   MainAxisAlignment.spaceBetween,
+                        //               children: [
+                        //                  Column(
+                        //                   crossAxisAlignment:
+                        //                       CrossAxisAlignment.start,
+                        //                   children: [
+                        //                     Padding(
+                        //                       padding: EdgeInsets.only(
+                        //                           top: 8.0, left: 8.0),
+                        //                       child: Text(
+                        //                           questions[0].speakerDescription!,
+                        //                         style: TextStyle(
+                        //                             fontSize: 8.0,
+                        //                             color: Colors.white),
+                        //                       ),
+                        //                     ),
+                        //                     Padding(
+                        //                       padding: EdgeInsets.only(
+                        //                           top: 8.0, left: 8.0),
+                        //                       child: Text(
+                        //                         questions[0].speakername!,
+                        //                         // 'Joseph Annamkutty Jose',
+                        //                         style: TextStyle(
+                        //                             fontSize: 16.0,
+                        //                             color: Colors.amber,
+                        //                             fontWeight:
+                        //                                 FontWeight.w600),
+                        //                       ),
+                        //                     ),
+                        //                   ],
+                        //                 ),
+                        //                 Container(
+                        //                   child: Padding(
+                        //                     padding: const EdgeInsets.all(8.0),
+                        //                     child: Image.network(
+                        //                       questions[0].image!, // Set your image path here
+                        //                       width:
+                        //                           60, // Adjust the width as needed
+                        //                       height:
+                        //                           60, // Adjust the height as needed
+                        //                       fit: BoxFit
+                        //                           .cover, // Adjust the fit as needed
+                        //                     ),
+                        //                   ),
+                        //                 ),
+                        //               ],
+                        //             ),
+                        //           ],
+                        //         ),
+                        //         // ],
+                        //         // ),
+                        //       ),
+                        //       // child: Image.asset(
+                        //       //   'assets/greeting_bg.png',
+                        //       //   width: mq.size.width,
+                        //       //   height: 200,
+                        //       //   fit: BoxFit.fill,
+                        //       // ),
+                        //     ),
+                        //   ],
+                        // ),
                         VerticalSpacer(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1223,14 +1053,14 @@ class _HomePageState extends State<HomePage> {
                                 padding: const EdgeInsets.all(15.0),
                                 child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              type: PageTransitionType
-                                                  .rightToLeft,
-                                              child: ManageQuizes(
-                                                quizes: quizes,
-                                              )));
+                                      // Navigator.push(
+                                      //     context,
+                                      //     PageTransition(
+                                      //         type: PageTransitionType
+                                      //             .rightToLeft,
+                                      //         child: ManageQuizes(
+                                      //           quizes: quizes,
+                                      //         )));
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -1255,24 +1085,29 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(0.0),
                           child: SizedBox(
                             height:
-                                140.0, // Set a fixed height for the container
+                            140.0, // Set a fixed height for the container
                             child: ListView.builder(
                               scrollDirection:
-                                  Axis.horizontal, // Set horizontal scrolling
-                              itemCount: quizes.length,
+                              Axis.horizontal, // Set horizontal scrolling
+                              itemCount: newQuizes.length,
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.only(left: 8),
                                   child: GestureDetector(
                                     onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          PageTransition(
-                                              type: PageTransitionType
-                                                  .rightToLeft,
-                                              child: QuizHome(
-                                                quiz: quizes[index].id,
-                                              )));
+                                      if(newQuizes[index]=='Live Quiz')
+                                      {
+
+                                      }else{
+                                        Navigator.push(
+                                            context,
+                                            PageTransition(
+                                                type: PageTransitionType
+                                                    .rightToLeft,
+                                                child: QuizHome(
+                                                  quiz: newQuizes[index],
+                                                )));
+                                      }
                                     },
                                     child: Container(
                                       width: 200.0, // Set a width for each item
@@ -1287,9 +1122,9 @@ class _HomePageState extends State<HomePage> {
                                               .cover, // Adjust the image to cover the entire container
                                         ),
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                       ),
-                                      child: Text(quizes[index].id,
+                                      child: Text(newQuizes[index],
                                           style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.w800,
@@ -1342,10 +1177,10 @@ class _HomePageState extends State<HomePage> {
                           padding: const EdgeInsets.all(0.0),
                           child: SizedBox(
                             height:
-                                140.0, // Set a fixed height for the container
+                            140.0, // Set a fixed height for the container
                             child: ListView.builder(
                               scrollDirection:
-                                  Axis.horizontal, // Set horizontal scrolling
+                              Axis.horizontal, // Set horizontal scrolling
                               itemCount: featues.length,
                               itemBuilder: (context, index) {
                                 return Padding(
@@ -1370,7 +1205,7 @@ class _HomePageState extends State<HomePage> {
                                       decoration: BoxDecoration(
                                         color: Colors.grey[200],
                                         borderRadius:
-                                            BorderRadius.circular(10.0),
+                                        BorderRadius.circular(10.0),
                                         image: const DecorationImage(
                                           image: AssetImage(
                                               'assets/bg_botom_two.png'),
