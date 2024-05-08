@@ -28,14 +28,25 @@ class EventDetails {
   String? speakername;
   String? description;
   String? day;
+  String? speakerDescription;
+  String? dateTime;
+  String? location;
+  String? id;
+  String? eventName;
 
-  EventDetails({this.image, this.speakername, this.description,this.day});
+
+  EventDetails({this.image, this.speakername, this.description,this.day,this.dateTime,this.location,this.speakerDescription,this.id,this.eventName});
 
   EventDetails.fromJson(Map<String, dynamic> json) {
+    eventName=json['event'];
     image = json['image'];
     speakername = json['speakername'];
     description = json['description'];
     day=json['day'];
+    dateTime=json['date'];
+    location=json['place'];
+    speakerDescription=json['speakerdec'];
+    id=json['id'];
   }
 
   Map<String, dynamic> toJson() {
@@ -44,6 +55,13 @@ class EventDetails {
     data['speakername'] = this.speakername;
     data['description'] = this.description;
     data['day']=this.day;
+    data['event']=this.eventName;
+    data['date']=this.dateTime;
+    data['place']=this.location;
+    data['speakerdec']=this.speakerDescription;
+    data['id']=this.id;
+
+
     return data;
   }
 }
