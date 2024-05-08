@@ -7,6 +7,7 @@ import 'package:conclave/custom/spacers.dart';
 import 'package:conclave/manage_quizes.dart';
 import 'package:conclave/models/feature_model.dart';
 import 'package:conclave/quiz_home.dart';
+import 'package:conclave/quiz_main/QuizHomePageWidget.dart';
 import 'package:conclave/services/storage_services.dart';
 import 'package:conclave/web_view_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -1097,7 +1098,10 @@ class _HomePageState extends State<HomePage> {
                                     onTap: () {
                                       if(newQuizes[index]=='Live Quiz')
                                       {
-
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(builder: (context) => QuizHomePageWidget()),
+                                        );
                                       }else{
                                         Navigator.push(
                                             context,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conclave/constants/constants.dart';
 import 'package:conclave/greetings_screen.dart';
+import 'package:conclave/home_page.dart';
 import 'package:conclave/quiz_main/QuizHomePageWidget.dart';
 import 'package:conclave/services/storage_services.dart';
 import 'package:conclave/utils/random.dart';
@@ -213,7 +214,7 @@ class _OtpVericationScreenState extends State<OtpVericationScreen> {
                             context,
                             PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: const QuizHomePageWidget()));
+                                child: const HomePage()));
                         } catch (e) {
                           setState(() {
                             loading = false;
