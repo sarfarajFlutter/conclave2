@@ -28,7 +28,5 @@
 	<string>1:842540261392:ios:ae4cf01e83767903c12a95</string>
 	<key>DATABASE_URL</key>
 	<string>https://pulse-employee-app-default-rtdb.asia-southeast1.firebasedatabase.app</string>
-	
-
 </dict>
 </plist>

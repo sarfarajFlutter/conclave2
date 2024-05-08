@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conclave/constants/constants.dart';
 import 'package:conclave/greetings_screen.dart';
+import 'package:conclave/quiz_main/QuizHomePageWidget.dart';
 import 'package:conclave/services/storage_services.dart';
 import 'package:conclave/utils/random.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -48,6 +49,7 @@ class _OtpVericationScreenState extends State<OtpVericationScreen> {
           },
           verificationFailed: (FirebaseAuthException e) {
             // Handle verification failure errors
+            print(e.message ?? "");
 
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(e.message ?? "")),
@@ -201,11 +203,17 @@ class _OtpVericationScreenState extends State<OtpVericationScreen> {
                             loading = false;
                           });
 
-                          Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: const GreetingScreen()));
+                          // Navigator.push(
+                          //     context,
+                          //     PageTransition(
+                          //         type: PageTransitionType.rightToLeft,
+                          //         child: const GreetingScreen()));
+
+                            Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: const QuizHomePageWidget()));
                         } catch (e) {
                           setState(() {
                             loading = false;
