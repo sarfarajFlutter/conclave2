@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conclave/home_page.dart';
 import 'package:conclave/otp_verifcation.dart';
 import 'package:conclave/services/storage_services.dart';
 import 'package:flutter/material.dart';
@@ -189,6 +190,7 @@ class _CredentialsScreenState extends State<CredentialsScreen> {
                   NeoPopTiltedButton(
                     isFloating: true,
                     onTapUp: () async {
+                   print("pressss");
                       setState(() {
                         loading = true;
                       });
@@ -210,18 +212,32 @@ class _CredentialsScreenState extends State<CredentialsScreen> {
                         setState(() {
                           loading = false;
                         });
-
+print("aaaaaaaaa");
+print(phoneController.text);
                         LocalStorageService()
                             .saveData('mobNo', phoneController.text);
                         Navigator.push(
                             context,
                             PageTransition(
                                 type: PageTransitionType.rightToLeft,
-                                child: const OtpVericationScreen()));
+                                child: const HomePage()));
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Invalid credentials')),
                         );
+                        print("mmmmmmmm");
+print(phoneController.text);
+                        // LocalStorageService()
+                        //     .saveData('mobNo', phoneController.text);
+                        // Navigator.push(
+                        //     context,
+                        //     PageTransition(
+                        //         type: PageTransitionType.rightToLeft,
+                        //         child: const HomePage()));
+
+                        setState(() {
+                          loading = false;
+                        });
                       }
                     },
                     decoration: const NeoPopTiltedButtonDecoration(

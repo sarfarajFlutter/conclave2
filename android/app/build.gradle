@@ -66,4 +66,7 @@ flutter {
 }
 
 dependencies {
+    implementation 'androidx.browser:browser:1.2.0'
+//    implementation 'com.google.firebase:firebase-app-check'
+
 }
