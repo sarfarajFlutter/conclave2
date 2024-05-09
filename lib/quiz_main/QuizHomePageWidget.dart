@@ -81,7 +81,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
     FirebaseFirestore.instance.collection('conclave_live_quiz_answer').doc(qId);
 
     final docRef_correct =
-    FirebaseFirestore.instance.collection('conclave_live_quiz_answer').doc("$qId+_correct");
+    FirebaseFirestore.instance.collection('conclave_live_quiz_answer').doc("${qId}_correct");
 
     var pf = await LocalStorageService().loadData('Pfnum') ?? '';
     currentQid = qId;
@@ -304,7 +304,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                                         ans ="";
                                                                         qId = "";
                                                                         selected=-1;
-                                                                        pushedLiveQuiz = 1;
+                                                                        pushedLiveQuiz = -1;
 
                                                                       });
                                                                     });

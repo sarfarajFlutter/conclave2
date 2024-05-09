@@ -692,10 +692,11 @@ class _HomePageState extends State<HomePage> {
                           ],
                         ),
                         VerticalSpacer(height: 20),
+
                         CarouselSlider(
                           carouselController: buttonCarouselController,
                           options: CarouselOptions(
-                            height: 200,
+                            height: 230,
                             aspectRatio: 16 / 9,
                             viewportFraction: 0.9,
                             initialPage: 0,
@@ -713,7 +714,6 @@ class _HomePageState extends State<HomePage> {
                             questions.length,
                                 (index) => ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Flexible(
                               child: Container(
                                 decoration: const BoxDecoration(
                                   image: DecorationImage(
@@ -727,16 +727,14 @@ class _HomePageState extends State<HomePage> {
                                   children: [
                                     Padding(
                                       padding: EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
-                                      child:
-                                      Text(
+                                      child: Text(
                                         questions[index].eventName!,
                                         style: TextStyle(fontSize: 12.0, color: Colors.white),
                                       ),
-                                      // ),
                                     ),
                                     Divider(height: 2.0),
                                     Padding(
-                                      padding:  EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
+                                      padding: EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
                                       child: Text(
                                         questions[index].description!,
                                         style: TextStyle(fontSize: 8.0, color: Colors.white),
@@ -781,7 +779,6 @@ class _HomePageState extends State<HomePage> {
                                         ],
                                       ),
                                     ),
-
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -800,9 +797,10 @@ class _HomePageState extends State<HomePage> {
                                               child: Text(
                                                 questions[index].speakername!,
                                                 style: TextStyle(
-                                                    fontSize: 16.0,
-                                                    color: Colors.amber,
-                                                    fontWeight: FontWeight.w600),
+                                                  fontSize: 16.0,
+                                                  color: Colors.amber,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -811,10 +809,10 @@ class _HomePageState extends State<HomePage> {
                                           child: Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Image.network(
-                                              questions[index].image!, // Set your image path here
-                                              width: 60, // Adjust the width as needed
-                                              height: 60, // Adjust the height as needed
-                                              fit: BoxFit.cover, // Adjust the fit as needed
+                                              questions[index].image!,
+                                              width: 60,
+                                              height: 60,
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
                                         ),
@@ -823,10 +821,146 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                               ),
-                ),
                             ),
                           ),
                         ),
+
+                        ///
+                //         CarouselSlider(
+                //           carouselController: buttonCarouselController,
+                //           options: CarouselOptions(
+                //             height: 230,
+                //             aspectRatio: 16 / 9,
+                //             viewportFraction: 0.9,
+                //             initialPage: 0,
+                //             enableInfiniteScroll: true,
+                //             reverse: false,
+                //             autoPlay: true,
+                //             autoPlayInterval: const Duration(seconds: 3),
+                //             autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                //             autoPlayCurve: Curves.fastOutSlowIn,
+                //             enlargeCenterPage: true,
+                //             enlargeFactor: 0.1,
+                //             scrollDirection: Axis.horizontal,
+                //           ),
+                //           items: List.generate(
+                //             questions.length,
+                //                 (index) => ClipRRect(
+                //               borderRadius: BorderRadius.circular(20),
+                //               child: Flexible(
+                //               child: Container(
+                //                 decoration: const BoxDecoration(
+                //                   image: DecorationImage(
+                //                     image: AssetImage('assets/greeting_bg.jpeg'),
+                //                     fit: BoxFit.fill,
+                //                   ),
+                //                 ),
+                //                 child: Column(
+                //                   mainAxisAlignment: MainAxisAlignment.end,
+                //                   crossAxisAlignment: CrossAxisAlignment.start,
+                //                   children: [
+                //                     Padding(
+                //                       padding: EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
+                //                       child:
+                //                       Text(
+                //                         questions[index].eventName!,
+                //                         style: TextStyle(fontSize: 12.0, color: Colors.white),
+                //                       ),
+                //                       // ),
+                //                     ),
+                //                     Divider(height: 2.0),
+                //                     Padding(
+                //                       padding:  EdgeInsets.only(left:20,right:0,top: 8 ,bottom: 8),
+                //                       child: Text(
+                //                         questions[index].description!,
+                //                         style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                       ),
+                //                     ),
+                //                     Spacer(),
+                //                     Container(
+                //                       color: Colors.white.withOpacity(0.20),
+                //                       child: Row(
+                //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //                         children: [
+                //                           Padding(
+                //                             padding: EdgeInsets.all(8.0),
+                //                             child: Row(
+                //                               children: [
+                //                                 Text(
+                //                                   'Time: ',
+                //                                   style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                                 ),
+                //                                 Text(
+                //                                   questions[index].dateTime!,
+                //                                   style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                                 ),
+                //                               ],
+                //                             ),
+                //                           ),
+                //                           Padding(
+                //                             padding: EdgeInsets.all(8.0),
+                //                             child: Row(
+                //                               children: [
+                //                                 Text(
+                //                                   'Location: ',
+                //                                   style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                                 ),
+                //                                 Text(
+                //                                   questions[index].location!,
+                //                                   style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                                 ),
+                //                               ],
+                //                             ),
+                //                           ),
+                //                         ],
+                //                       ),
+                //                     ),
+                //
+                //                     Row(
+                //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //                       children: [
+                //                         Column(
+                //                           crossAxisAlignment: CrossAxisAlignment.start,
+                //                           children: [
+                //                             Padding(
+                //                               padding: EdgeInsets.only(top: 8.0, left: 8.0),
+                //                               child: Text(
+                //                                 questions[index].speakerDescription!,
+                //                                 style: TextStyle(fontSize: 8.0, color: Colors.white),
+                //                               ),
+                //                             ),
+                //                             Padding(
+                //                               padding: EdgeInsets.only(top: 8.0, left: 8.0),
+                //                               child: Text(
+                //                                 questions[index].speakername!,
+                //                                 style: TextStyle(
+                //                                     fontSize: 16.0,
+                //                                     color: Colors.amber,
+                //                                     fontWeight: FontWeight.w600),
+                //                               ),
+                //                             ),
+                //                           ],
+                //                         ),
+                //                         Container(
+                //                           child: Padding(
+                //                             padding: const EdgeInsets.all(8.0),
+                //                             child: Image.network(
+                //                               questions[index].image!, // Set your image path here
+                //                               width: 60, // Adjust the width as needed
+                //                               height: 60, // Adjust the height as needed
+                //                               fit: BoxFit.cover, // Adjust the fit as needed
+                //                             ),
+                //                           ),
+                //                         ),
+                //                       ],
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ),
+                // ),
+                //             ),
+                //           ),
+                //         ),
                         ///
                         // const SizedBox(
                         //   height: 180,
