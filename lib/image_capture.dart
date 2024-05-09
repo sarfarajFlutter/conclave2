@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:camera/camera.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conclave/home_page.dart';
 import 'package:conclave/services/api_services.dart';
+import 'package:conclave/services/storage_services.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -83,11 +85,34 @@ class _ImageCaptureState extends State<ImageCapture> {
     imgs.add(base64Encode(result));
   }
 
+   Future<void> addpfuserToFeatures() async {
+  final docRef =
+      FirebaseFirestore.instance.collection('conclaveData').doc('faceregister');
+  var pf = await LocalStorageService().loadData('Pfnum') ?? '';
+
+  print("--------------->");
+
+  // // Check if the document exists
+  // final docSnapshot = await docRef.get();
+  // if (!docSnapshot.exists) {
+  //   // Document doesn't exist, create it
+  //   await docRef.set({}, SetOptions(merge: true)); // Create an empty document
+  // }
+
+  // Update the document with the new pf value added to the uses array
+  await docRef.update({
+    'uses': FieldValue.arrayUnion([pf]), // Add pf to the array
+  });
+
+}
+
+
   saveImages() async {
     var str = await ApiServices().saveImages(imgs);
     print(str.contains("succ"));
     if (str == "Registration successful") {
       print("doneeee");
+      addpfuserToFeatures();
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Registration successful")),
       );

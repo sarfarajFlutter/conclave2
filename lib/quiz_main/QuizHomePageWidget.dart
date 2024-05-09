@@ -50,12 +50,12 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
 
     print("--------------->");
 
-    // Check if the document exists
-    final docSnapshot = await docRef.get();
-    if (!docSnapshot.exists) {
-      // Document doesn't exist, create it
-      await docRef.set({}, SetOptions(merge: true)); // Create an empty document
-    }
+  // Check if the document exists
+  final docSnapshot = await docRef.get();
+  if (!docSnapshot.exists) {
+    // Document doesn't exist, create it
+    await docRef.set({}, SetOptions(merge: true)); // Create an empty document
+  }
     // Update the document with the new view
     await docRef.update({
       'users': FieldValue.arrayUnion([view]), // Add the view to the array
