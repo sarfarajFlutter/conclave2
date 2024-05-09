@@ -481,13 +481,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    saveLogin();
     showNameByNumber();
     adminCheck();
-
     getTitles();
     getEvent();
     getDocuments();
-
     getCurrentLocation(targetLatitude, targetLongitude, 50);
   }
 
@@ -714,6 +713,7 @@ class _HomePageState extends State<HomePage> {
                             questions.length,
                                 (index) => ClipRRect(
                               borderRadius: BorderRadius.circular(20),
+                              child: Flexible(
                               child: Container(
                                 decoration: const BoxDecoration(
                                   image: DecorationImage(
@@ -823,6 +823,7 @@ class _HomePageState extends State<HomePage> {
                                   ],
                                 ),
                               ),
+                ),
                             ),
                           ),
                         ),
@@ -1255,5 +1256,10 @@ class _HomePageState extends State<HomePage> {
         ]),
       ),
     );
+  }
+
+  void saveLogin() {
+
+    LocalStorageService().saveData('LoginStatus', 'true');
   }
 }
