@@ -1,7 +1,11 @@
+import 'package:conclave/custom/spacers.dart';
 import 'package:conclave/quiz_main/QuizHomePageModel.dart';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
+
+import '../services/storage_services.dart';
 
 
 class QuizHomePageWidget extends StatefulWidget {
@@ -16,6 +20,12 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> quizData = [];
+
+  
+  String selecteds ="";
+  String ans ="";
+  String qId = "";
+  
   @override
   void initState() {
     super.initState();
@@ -31,6 +41,32 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
     super.dispose();
   }
 
+  Future<void> addViewToFeatures() async {
+    final docRef =
+    FirebaseFirestore.instance.collection('conclave_live_quiz_answer').doc(qId);
+    var pf = await LocalStorageService().loadData('Pfnum') ?? '';
+    
+    final view = {'time_stamp': DateTime.now(), 'user_id': pf};
+
+    print("--------------->");
+
+    // Check if the document exists
+    final docSnapshot = await docRef.get();
+    if (!docSnapshot.exists) {
+      // Document doesn't exist, create it
+      await docRef.set({}, SetOptions(merge: true)); // Create an empty document
+    }
+    // Update the document with the new view
+    await docRef.update({
+      'users': FieldValue.arrayUnion([view]), // Add the view to the array
+    });
+
+    setState(() {
+      selecteds == "";
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Map<String, dynamic>>>(
@@ -38,7 +74,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Return a loading indicator or placeholder widget if the connection is still waiting
-          return CircularProgressIndicator(); // Example loading indicator
+          return const CircularProgressIndicator(); // Example loading indicator
         } else if (snapshot.hasError) {
           // Return an error widget if there's an error with the stream
           return Text('Error: ${snapshot.error}');
@@ -56,18 +92,23 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: AssetImage(
-                        'assets/bg_blue_new.jpeg',
-                      ),
-                    ),
+                    // image: DecorationImage(
+                    //   fit: BoxFit.cover,
+                    //   image: AssetImage(
+                    //     'assets/bg_blue_new.jpeg',
+                    //   ),
+                    // ),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     children: [
+                      Row(
+                        children: [IconButton(onPressed: (){
+                          Navigator.pop(context);
+                        }, icon: Icon(Icons.arrow_back_ios_new))],
+                      ),
                       Expanded(
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
@@ -77,7 +118,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
-                                  Padding(
+                                  const Padding(
                                     padding: EdgeInsetsDirectional.fromSTEB(0, 10, 0, 0),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
@@ -96,7 +137,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                       ],
                                     ),
                                   ),
-                                  Row(
+                                  const Row(
                                     mainAxisSize: MainAxisSize.max,
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
@@ -128,12 +169,12 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                   ),
                                   Expanded(
                                     child: Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(20, 5, 20, 0),
+                                      padding: const EdgeInsetsDirectional.fromSTEB(20, 5, 20, 0),
                                       child: Container(
                                         width: double.infinity,
                                         height: 100,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
+                                        decoration: const BoxDecoration(
+                                          // color: Colors.white,
                                           borderRadius: BorderRadius.only(
                                             bottomLeft: Radius.circular(20),
                                             bottomRight: Radius.circular(20),
@@ -142,7 +183,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                           ),
                                         ),
                                         child: Padding(
-                                          padding: EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
+                                          padding: const EdgeInsetsDirectional.fromSTEB(5, 5, 5, 5),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
                                             children: [
@@ -150,34 +191,42 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                 child: ListView(
                                                   padding: EdgeInsets.zero,
                                                   shrinkWrap: true,
-                                                  scrollDirection: Axis.vertical,
+                                                  physics:NeverScrollableScrollPhysics(),
+                                                  // scrollDirection: Axis.vertical,
                                                   children: _buildQuizWidgets(snapshot.data), // Updated here
                                                 ),
                                               ),
                                               Padding(
-                                                padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
+                                                padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 5),
                                                 child: Row(
                                                   mainAxisSize: MainAxisSize.max,
                                                   mainAxisAlignment: MainAxisAlignment.center,
                                                   children: [
                                                     Expanded(
                                                       child: Padding(
-                                                        padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                                                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                                                         child: ElevatedButton(
                                                           onPressed: () {
                                                             print('Button pressed ...');
+                                                            print(selecteds);
+                                                            print(ans);
+
+                                                            if(selecteds==ans){
+                                                              print("hdjavbsd");
+                                                              addViewToFeatures();
+                                                            }
 
 
                                                           },
                                                           style: ElevatedButton.styleFrom(
-                                                            padding: EdgeInsets.fromLTRB(24, 0, 24, 0),
-                                                            backgroundColor: Color(0xFFE1F0FF),
+                                                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                                                            backgroundColor: const Color(0xFFE1F0FF),
                                                             elevation: 3,
                                                             shape: RoundedRectangleBorder(
                                                               borderRadius: BorderRadius.circular(8),
                                                             ),
                                                           ),
-                                                          child: Text(
+                                                          child: const Text(
                                                             'Submit',
                                                             style: TextStyle(
                                                               fontFamily: 'Readex Pro',
@@ -194,6 +243,8 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                   ],
                                                 ),
                                               ),
+                                              VerticalSpacer(height: 60),
+                                              
 
                                                Expanded(
                   child: Row(
@@ -203,11 +254,11 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                       Expanded(
                         child: Padding(
                           padding:
-                          EdgeInsetsDirectional.fromSTEB(20, 30, 20, 30),
+                          const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 0),
                           child: Container(
                             width: 100,
                             height: double.infinity,
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                               color: Color(0xFF7467F7),
                               borderRadius: BorderRadius.only(
                                 bottomLeft: Radius.circular(20),
@@ -219,7 +270,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                             child: Column(
                               mainAxisSize: MainAxisSize.max,
                               children: [
-                                Padding(
+                                const Padding(
                                   padding:
                                   EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                                   child: Row(
@@ -263,7 +314,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                         height: 80,
                                                         clipBehavior:
                                                         Clip.antiAlias,
-                                                        decoration: BoxDecoration(
+                                                        decoration: const BoxDecoration(
                                                           shape: BoxShape.circle,
                                                         ),
                                                         child: Image.network(
@@ -271,7 +322,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -287,7 +338,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           ),
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -315,7 +366,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                         height: 100,
                                                         clipBehavior:
                                                         Clip.antiAlias,
-                                                        decoration: BoxDecoration(
+                                                        decoration: const BoxDecoration(
                                                           shape: BoxShape.circle,
                                                         ),
                                                         child: Image.network(
@@ -323,7 +374,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -341,7 +392,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           ),
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -368,7 +419,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                         height: 80,
                                                         clipBehavior:
                                                         Clip.antiAlias,
-                                                        decoration: BoxDecoration(
+                                                        decoration: const BoxDecoration(
                                                           shape: BoxShape.circle,
                                                         ),
                                                         child: Image.network(
@@ -376,7 +427,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           fit: BoxFit.cover,
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -392,7 +443,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                           ),
                                                         ),
                                                       ),
-                                                      Padding(
+                                                      const Padding(
                                                         padding:
                                                         EdgeInsetsDirectional
                                                             .fromSTEB(
@@ -535,6 +586,13 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       for (int index = 0; index < data.length; index++) {
         var quiz = data[index];
 
+        
+          ans = quiz['answer'];
+          qId = quiz['quiz_id'];
+          print(ans+"--->");
+         
+   
+
         // Create radio buttons for options
         List<Widget> optionRadioButtons = [];
         for (int i = 1; i <= 4; i++) {
@@ -546,11 +604,24 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                   value: quiz[optionKey],
                   groupValue: selectedOptions[index],
                   onChanged: (value) {
-                    // Update selected option for this quiz item
-                    selectedOptions[index] = value;
+                    print("-----");
+                    print(quiz[optionKey]);
+                    print(value);
+                    
+
+                    setState(() {
+                      selectedOptions[index] = value;
+                      selecteds = value;
+
+                       print("-----");
+
+                      print(selecteds);
+                      print(selectedOptions[index]);
+                      
+                    });
                   },
                 ),
-                Text(quiz[optionKey], style: TextStyle(color: Colors.black)),
+                Text(quiz[optionKey], style:  TextStyle(color: (quiz[optionKey]!= selectedOptions[index]) ? Colors.black : Colors.blue)),
               ],
             ),
           );
@@ -560,10 +631,10 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
         Widget quizWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Question: ${quiz['question']}', style: TextStyle(color: Colors.black)),
+            Text('Question: ${quiz['question']}', style: const TextStyle(color: Colors.black)),
             // Add radio buttons for options
             ...optionRadioButtons,
-            Divider(), // Add a divider between each quiz item
+            // const Divider(), // Add a divider between each quiz item
           ],
         );
 
