@@ -218,11 +218,7 @@ class _CredentialsScreenState extends State<CredentialsScreen> {
 
                       if (test == employeeIdController.text) {
                         LocalStorageService().saveData('Pfnum', test!);
-                        // final name =
-                        //     await getNameByNumber(phoneController.text);
-                        // print("----------->${name!}");
 
-                        // Random().showAutoDismissingPopup(context, Text(name));
 
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Signing in')),
