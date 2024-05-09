@@ -4,6 +4,7 @@ import 'package:conclave/quiz_main/QuizHomePageModel.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
 import '../services/storage_services.dart';
 
@@ -21,17 +22,23 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   List<Map<String, dynamic>> quizData = [];
 
-  
+
   String selecteds ="";
   String ans ="";
   String qId = "";
+  String currentQid = "";
+  int selected=-1;
+  
+  int pushedLiveQuiz = -1;
+
+  Object? previousData;
   
   @override
   void initState() {
     super.initState();
     _model = QuizHomePageModel();
-
     fetchQuizData();
+    getSavedQid();
   }
 
   @override
@@ -41,12 +48,20 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
     super.dispose();
   }
 
-  Future<void> addViewToFeatures() async {
+  Future<void> addViewToFeatures(Function()? callback) async {
     final docRef =
     FirebaseFirestore.instance.collection('conclave_live_quiz_answer').doc(qId);
     var pf = await LocalStorageService().loadData('Pfnum') ?? '';
-    
-    final view = {'time_stamp': DateTime.now(), 'user_id': pf};
+    currentQid = qId;
+    LocalStorageService().saveData('currentQid', qId!);
+    // Get the current timestamp
+    DateTime now = DateTime.now();
+
+    // Format the timestamp
+    String formattedDate = DateFormat('yyyy-MM-dd hh:mm:ss').format(now);
+    print("ssssssssss");
+    print(formattedDate);
+    final view = {'time_stamp': formattedDate, 'user_id': pf, 'isCorrect' : selecteds==ans ? true : false};
 
     print("--------------->");
 
@@ -61,12 +76,12 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       'users': FieldValue.arrayUnion([view]), // Add the view to the array
     });
 
-    setState(() {
-      selecteds == "";
-    });
+    // Call the callback function if provided
+    if (callback != null) {
+      callback();
+    }
 
   }
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<Map<String, dynamic>>>(
@@ -74,11 +89,24 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       builder: (BuildContext context, AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Return a loading indicator or placeholder widget if the connection is still waiting
-          return const CircularProgressIndicator(); // Example loading indicator
+          return Container(
+            color:Colors.white,
+            // child:Container(height: 50,width: 50,child: CircularProgressIndicator() )
+
+          ); // Example loading indicator
         } else if (snapshot.hasError) {
           // Return an error widget if there's an error with the stream
           return Text('Error: ${snapshot.error}');
         } else {
+          if (snapshot.hasData) {
+            if (snapshot.data != null && snapshot.data != previousData) {
+              // Data has changed, update your UI accordingly
+              // For example, you can call a function to handle the data change
+              handleDataChange(snapshot.data);
+              // Update the previousData variable for comparison in the next build
+              previousData = snapshot.data;
+            }
+          }
           // Return your main widget tree here, utilizing the data from the stream
           return GestureDetector(
             onTap: () => _model.unfocusNode.canRequestFocus
@@ -206,18 +234,23 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                       child: Padding(
                                                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                                                         child: ElevatedButton(
-                                                          onPressed: () {
+                                                          onPressed:  pushedLiveQuiz == -1 ? ()  {
                                                             print('Button pressed ...');
                                                             print(selecteds);
                                                             print(ans);
+                                                              addViewToFeatures((){
+                                                                // Callback function to execute after adding the view
+                                                                setState(() {
+                                                                  selecteds = "";
+                                                                  selecteds ="";
+                                                                  ans ="";
+                                                                  qId = "";
+                                                                  selected=-1;
+                                                                  pushedLiveQuiz = 1;
 
-                                                            if(selecteds==ans){
-                                                              print("hdjavbsd");
-                                                              addViewToFeatures();
-                                                            }
-
-
-                                                          },
+                                                                });
+                                                              });
+                                                          }:null,
                                                           style: ElevatedButton.styleFrom(
                                                             padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
                                                             backgroundColor: const Color(0xFFE1F0FF),
@@ -226,8 +259,8 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                               borderRadius: BorderRadius.circular(8),
                                                             ),
                                                           ),
-                                                          child: const Text(
-                                                            'Submit',
+                                                          child: Text(
+                                                            pushedLiveQuiz == -1 ? 'Submit' : 'Done',
                                                             style: TextStyle(
                                                               fontFamily: 'Readex Pro',
                                                               color: Colors.black,
@@ -244,8 +277,6 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                                 ),
                                               ),
                                               VerticalSpacer(height: 60),
-                                              
-
                                                Expanded(
                   child: Row(
                     mainAxisSize: MainAxisSize.max,
@@ -470,47 +501,7 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
                                     ],
                                   ),
                                 ),
-                                // Padding(
-                                //   padding: EdgeInsetsDirectional.fromSTEB(
-                                //       0, 0, 0, 10),
-                                //   child: Row(
-                                //     mainAxisSize: MainAxisSize.max,
-                                //     mainAxisAlignment: MainAxisAlignment.center,
-                                //     children: [
-                                //       Expanded(
-                                //         child: Padding(
-                                //           padding: EdgeInsetsDirectional.fromSTEB(
-                                //               20, 0, 20, 0),
-                                //           child: Container(
-                                //             width: 100,
-                                //             height: 40,
-                                //             decoration: BoxDecoration(
-                                //               color: Color(0xFFE1F0FF),
-                                //               borderRadius: BorderRadius.only(
-                                //                 bottomLeft: Radius.circular(10),
-                                //                 bottomRight: Radius.circular(10),
-                                //                 topLeft: Radius.circular(10),
-                                //                 topRight: Radius.circular(10),
-                                //               ),
-                                //             ),
-                                //             child: Align(
-                                //               alignment: AlignmentDirectional(0, 0),
-                                //               child: Text(
-                                //                 'Your Rank',
-                                //                 textAlign: TextAlign.center,
-                                //                 style: TextStyle(
-                                //                   fontFamily: 'Readex Pro',
-                                //                   letterSpacing: 0,
-                                //                   fontWeight: FontWeight.w600,
-                                //                 ),
-                                //               ),
-                                //             ),
-                                //           ),
-                                //         ),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
+
                               ],
                             ),
                           ),
@@ -541,8 +532,6 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       },
     );
   }
-
-
   Stream<List<Map<String, dynamic>>> fetchQuizData() {
     final CollectionReference quizCollection =
     FirebaseFirestore.instance.collection('conclave_live_quiz');
@@ -572,12 +561,13 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
         print('Option 3: ${quiz['option3']}');
         print('Quiz ID: ${quiz['quiz_id']}');
         print('-----------------------');
+
+        currentQid == quiz['quiz_id'] as String ? pushedLiveQuiz = 1 : pushedLiveQuiz = -1;
       });
 
       return quizData;
     });
   }
-
   List<Widget> _buildQuizWidgets(List<Map<String, dynamic>>? data) {
     List<Widget> quizWidgets = [];
     if (data != null) {
@@ -586,42 +576,32 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
       for (int index = 0; index < data.length; index++) {
         var quiz = data[index];
 
-        
+
           ans = quiz['answer'];
           qId = quiz['quiz_id'];
           print(ans+"--->");
-         
-   
 
         // Create radio buttons for options
         List<Widget> optionRadioButtons = [];
         for (int i = 1; i <= 4; i++) {
-          String optionKey = 'option$i';
+        //   String optionKey = 'option$i';
           optionRadioButtons.add(
             Row(
               children: [
                 Radio(
-                  value: quiz[optionKey],
-                  groupValue: selectedOptions[index],
+                  value: i,
+                  groupValue: selected,
                   onChanged: (value) {
-                    print("-----");
-                    print(quiz[optionKey]);
-                    print(value);
-                    
-
+                    selected = value as int;
                     setState(() {
-                      selectedOptions[index] = value;
-                      selecteds = value;
-
-                       print("-----");
-
-                      print(selecteds);
-                      print(selectedOptions[index]);
-                      
+                      selecteds = quiz["option$value"];
+                      ans =quiz["answer"];
+                      qId = quiz["quiz_id"];
                     });
                   },
+                  activeColor: Colors.amber,
                 ),
-                Text(quiz[optionKey], style:  TextStyle(color: (quiz[optionKey]!= selectedOptions[index]) ? Colors.black : Colors.blue)),
+                Text(quiz["option$i"], style:  TextStyle(color: Colors.black)),
               ],
             ),
           );
@@ -651,282 +631,12 @@ class _QuizHomePageWidgetState extends State<QuizHomePageWidget> {
     return quizWidgets;
   }
 
+  void handleDataChange(List<Map<String, dynamic>>? data) {
+    /// make chnages for button
+  }
 
+  Future<void> getSavedQid() async {
+    currentQid = await LocalStorageService().loadData('currentQid') ?? '';
+  }
 
-
-
-
-//  Expanded(
-//                   child: Row(
-//                     mainAxisSize: MainAxisSize.max,
-//                     mainAxisAlignment: MainAxisAlignment.center,
-//                     children: [
-//                       Expanded(
-//                         child: Padding(
-//                           padding:
-//                           EdgeInsetsDirectional.fromSTEB(20, 30, 20, 30),
-//                           child: Container(
-//                             width: 100,
-//                             height: double.infinity,
-//                             decoration: BoxDecoration(
-//                               color: Color(0xFF7467F7),
-//                               borderRadius: BorderRadius.only(
-//                                 bottomLeft: Radius.circular(20),
-//                                 bottomRight: Radius.circular(20),
-//                                 topLeft: Radius.circular(20),
-//                                 topRight: Radius.circular(20),
-//                               ),
-//                             ),
-//                             child: Column(
-//                               mainAxisSize: MainAxisSize.max,
-//                               children: [
-//                                 Padding(
-//                                   padding:
-//                                   EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
-//                                   child: Row(
-//                                     mainAxisSize: MainAxisSize.max,
-//                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                     children: [
-//                                       Text(
-//                                         'Leaderboard',
-//                                         style: TextStyle(
-//                                           fontFamily: 'Readex Pro',
-//                                           color: Colors.white,
-//                                           fontSize: 16,
-//                                           letterSpacing: 0,
-//                                           fontWeight: FontWeight.w600,
-//                                         ),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 Expanded(
-//                                   child: Row(
-//                                     mainAxisSize: MainAxisSize.max,
-//                                     children: [
-//                                       Expanded(
-//                                         child: Column(
-//                                           mainAxisSize: MainAxisSize.max,
-//                                           children: [
-//                                             Expanded(
-//                                               child: Row(
-//                                                 mainAxisSize: MainAxisSize.max,
-//                                                 mainAxisAlignment:
-//                                                 MainAxisAlignment.spaceEvenly,
-//                                                 children: [
-//                                                   Column(
-//                                                     mainAxisSize: MainAxisSize.max,
-//                                                     mainAxisAlignment:
-//                                                     MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Container(
-//                                                         width: 80,
-//                                                         height: 80,
-//                                                         clipBehavior:
-//                                                         Clip.antiAlias,
-//                                                         decoration: BoxDecoration(
-//                                                           shape: BoxShape.circle,
-//                                                         ),
-//                                                         child: Image.network(
-//                                                           'https://picsum.photos/seed/431/600',
-//                                                           fit: BoxFit.cover,
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Name',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             fontSize: 14,
-//                                                             letterSpacing: 0,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Score',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             fontSize: 13,
-//                                                             letterSpacing: 0,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                   Column(
-//                                                     mainAxisSize: MainAxisSize.max,
-//                                                     mainAxisAlignment:
-//                                                     MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Container(
-//                                                         width: 100,
-//                                                         height: 100,
-//                                                         clipBehavior:
-//                                                         Clip.antiAlias,
-//                                                         decoration: BoxDecoration(
-//                                                           shape: BoxShape.circle,
-//                                                         ),
-//                                                         child: Image.network(
-//                                                           'https://picsum.photos/seed/431/600',
-//                                                           fit: BoxFit.cover,
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Name',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             fontSize: 16,
-//                                                             letterSpacing: 0,
-//                                                             fontWeight:
-//                                                             FontWeight.w600,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Score',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             letterSpacing: 0,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                   Column(
-//                                                     mainAxisSize: MainAxisSize.max,
-//                                                     mainAxisAlignment:
-//                                                     MainAxisAlignment.center,
-//                                                     children: [
-//                                                       Container(
-//                                                         width: 80,
-//                                                         height: 80,
-//                                                         clipBehavior:
-//                                                         Clip.antiAlias,
-//                                                         decoration: BoxDecoration(
-//                                                           shape: BoxShape.circle,
-//                                                         ),
-//                                                         child: Image.network(
-//                                                           'https://picsum.photos/seed/431/600',
-//                                                           fit: BoxFit.cover,
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Name',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             fontSize: 14,
-//                                                             letterSpacing: 0,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                       Padding(
-//                                                         padding:
-//                                                         EdgeInsetsDirectional
-//                                                             .fromSTEB(
-//                                                             0, 4, 0, 0),
-//                                                         child: Text(
-//                                                           'Score',
-//                                                           style: TextStyle(
-//                                                             fontFamily:
-//                                                             'Readex Pro',
-//                                                             color: Colors.white,
-//                                                             fontSize: 13,
-//                                                             letterSpacing: 0,
-//                                                           ),
-//                                                         ),
-//                                                       ),
-//                                                     ],
-//                                                   ),
-//                                                 ],
-//                                               ),
-//                                             ),
-//                                           ],
-//                                         ),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                                 Padding(
-//                                   padding: EdgeInsetsDirectional.fromSTEB(
-//                                       0, 0, 0, 10),
-//                                   child: Row(
-//                                     mainAxisSize: MainAxisSize.max,
-//                                     mainAxisAlignment: MainAxisAlignment.center,
-//                                     children: [
-//                                       Expanded(
-//                                         child: Padding(
-//                                           padding: EdgeInsetsDirectional.fromSTEB(
-//                                               20, 0, 20, 0),
-//                                           child: Container(
-//                                             width: 100,
-//                                             height: 40,
-//                                             decoration: BoxDecoration(
-//                                               color: Color(0xFFE1F0FF),
-//                                               borderRadius: BorderRadius.only(
-//                                                 bottomLeft: Radius.circular(10),
-//                                                 bottomRight: Radius.circular(10),
-//                                                 topLeft: Radius.circular(10),
-//                                                 topRight: Radius.circular(10),
-//                                               ),
-//                                             ),
-//                                             child: Align(
-//                                               alignment: AlignmentDirectional(0, 0),
-//                                               child: Text(
-//                                                 'Your Rank',
-//                                                 textAlign: TextAlign.center,
-//                                                 style: TextStyle(
-//                                                   fontFamily: 'Readex Pro',
-//                                                   letterSpacing: 0,
-//                                                   fontWeight: FontWeight.w600,
-//                                                 ),
-//                                               ),
-//                                             ),
-//                                           ),
-//                                         ),
-//                                       ),
-//                                     ],
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
 }
