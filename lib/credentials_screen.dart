@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:conclave/greetings_screen.dart';
 import 'package:conclave/home_page.dart';
 import 'package:conclave/otp_verifcation.dart';
 import 'package:conclave/services/storage_services.dart';
@@ -26,12 +27,30 @@ class _CredentialsScreenState extends State<CredentialsScreen> {
   TextEditingController upiCtrl = TextEditingController();
   FirebaseFirestore? db;
 
+  bool checkStatus=false;
+
   @override
   void initState() {
     super.initState();
     initialiseFirestore();
+    check();
   }
+  Future<void> check() async {
 
+
+    var pf = await LocalStorageService().loadData('LoginStatus') ?? '';
+    if(pf=='true')
+    {
+
+      checkStatus=true;
+    }
+    setState(() {
+
+    });
+
+    // Future.delayed(const Duration(seconds: 2));
+
+  }
   initialiseFirestore() async {
     if (!isFirstTime) {
       setState(() {
@@ -216,11 +235,32 @@ print("aaaaaaaaa");
 print(phoneController.text);
                         LocalStorageService()
                             .saveData('mobNo', phoneController.text);
-                        Navigator.push(
-                            context,
-                            PageTransition(
-                                type: PageTransitionType.rightToLeft,
-                                child: const HomePage()));
+
+
+
+                        setState(() {
+                          if(checkStatus==false)
+                          {
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: const GreetingScreen()));
+                            // CredentialsScreen(
+                            //   title: "",
+                            // ),
+                          }else{
+                            Navigator.push(
+                                context,
+                                PageTransition(
+                                    type: PageTransitionType.rightToLeft,
+                                    child: const HomePage()));
+                          }
+                        });
+
+
+
+
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Invalid credentials')),
